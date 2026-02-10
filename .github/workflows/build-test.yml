@@ -10,18 +10,28 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-test:
 
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Use Node.js 16.x
+    - name: Use Node.js 20
       uses: actions/setup-node@v3
       with: 
-        node-version: '16'
+        node-version: '20'
     - name: Install Dependencies
       run: npm install
     - name: Run tests
       run: npm run test
+
+  deploy:
+    needs: build_test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to Render
+      uses: JorgeLNJunior/render--deploy@v1.4.7
+      with:
+        service_id: ${{ secrets.RENDER_SERVICE_ID }}
+        api_key: ${{ secrets.RENDER_API_KEY }}
+        wait_deploy: true
